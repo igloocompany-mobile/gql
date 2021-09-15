@@ -232,6 +232,46 @@ class HttpLink extends Link {
   void dispose() {
     _httpClient?.close();
   }
+
+  String getHttpBody(Request request) {
+    http.Request httpRequest = _prepareRequest(request);
+    return httpRequest.body;
+  }
+
+  Response parseHttpResponse(http.Response httpResponse) {
+    try {
+      final dynamic responseBody = json.decode(
+        utf8.decode(
+          httpResponse.bodyBytes,
+        ),
+      );
+
+      return parser.parseResponse(responseBody as Map<String, dynamic>);
+    } catch (e) {
+      throw HttpLinkParserException(
+        originalException: e,
+        response: httpResponse,
+      );
+    }
+  }
+
+  Context updateResponseContext(
+      Response response,
+      http.Response httpResponse,
+      ) {
+    try {
+      return response.context.withEntry(
+        HttpLinkResponseContext(
+          statusCode: httpResponse.statusCode,
+          headers: httpResponse.headers,
+        ),
+      );
+    } catch (e) {
+      throw ContextWriteException(
+        originalException: e,
+      );
+    }
+  }
 }
 
 Map<String, String> _getHttpLinkHeaders(Request request) {
