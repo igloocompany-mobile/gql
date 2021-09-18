@@ -248,7 +248,7 @@ class HttpLink extends Link {
   }
 
   String getHttpBody(Request request) {
-    http.Request httpRequest = _prepareRequest(request);
+    http.Request httpRequest = (_prepareRequest(request) as http.Request);
     return httpRequest.body;
   }
 
