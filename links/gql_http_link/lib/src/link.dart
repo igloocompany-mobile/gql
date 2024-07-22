@@ -231,6 +231,24 @@ class HttpLink extends Link {
       );
     }
   }
+
+  Context updateResponseContext(
+    Response response,
+    http.Response httpResponse,
+  ) {
+    try {
+      return response.context.withEntry(
+        HttpLinkResponseContext(
+          statusCode: httpResponse.statusCode,
+          headers: httpResponse.headers,
+        ),
+      );
+    } catch (e) {
+      throw ContextWriteException(
+        originalException: e,
+      );
+    }
+  }
 }
 
 Map<String, String> _getHttpLinkHeaders(Request request) {
